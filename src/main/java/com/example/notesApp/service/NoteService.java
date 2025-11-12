@@ -24,6 +24,7 @@ public class NoteService {
     public void createNote(Note note){
         note.setCreatedDate(new Date());// устанавливаю текущую дату на новый note
         notesDAO.save(note);
+        log.info("Note successfully saved");
     }
 
     public void updateNote(String id, Note note){
@@ -33,10 +34,12 @@ public class NoteService {
         existing.setText(note.getText());
         existing.setTags(note.getTags());
         notesDAO.save(existing);
+        log.info("{} id note updated", id);
     }
 
     public void deleteNoteById(String id){
         notesDAO.deleteById(id);
+        log.info("Note in id = {} deleted", id);
     }
 
     public List<Note> getAllNotes(){
@@ -64,5 +67,4 @@ public class NoteService {
     public List<Note> getNotesPage(Pageable pageable) {
         return notesDAO.findAll(pageable).getContent();
     }
-
 }
