@@ -1,6 +1,8 @@
 package com.example.notesApp.service;
 
 import com.example.notesApp.dao.NotesDAO;
+import com.example.notesApp.dto.NoteDetailsDto;
+import com.example.notesApp.dto.NoteSummaryDto;
 import com.example.notesApp.enums.Tags;
 import com.example.notesApp.model.Note;
 import lombok.extern.slf4j.Slf4j;
@@ -21,10 +23,11 @@ public class NoteService {
         this.noteStatistic = noteStatistic;
     }
 
-    public void createNote(Note note){
-        note.setCreatedDate(new Date());// устанавливаю текущую дату на новый note
-        notesDAO.save(note);
+    public Note createNote(Note note){
+        note.setCreatedDate(new Date());// Setting current time
+        Note savedNote = notesDAO.save(note);
         log.info("Note successfully saved");
+        return savedNote;
     }
 
     public void updateNote(String id, Note note){
@@ -42,17 +45,21 @@ public class NoteService {
         log.info("Note in id = {} deleted", id);
     }
 
-    public List<Note> getAllNotes(){
-        return notesDAO.findAll();
+    public List<NoteSummaryDto> getAllNotes(){
+        return notesDAO.findAll().stream()
+                .map(note -> new NoteSummaryDto(note.getTitle(), note.getCreatedDate())).toList();
     }
 
-    public Note getNoteById(String id){
-        return notesDAO.findById(id)
-                .orElseThrow( ()-> new NoSuchElementException("Note not found with id: " + id));
+    public Optional<NoteDetailsDto> getNoteDetailsDTOById(String id){
+        return notesDAO.findById(id).map(
+                note -> new NoteDetailsDto(
+                        note.getText(),
+                        note.getTags())
+        );
     }
 
     public Map<String, Long> getWordStats(String id){
-        Note note = getNoteById(id);
+        Note note = notesDAO.findById(id).orElseThrow();// TODO check
         return noteStatistic.calculateWordStatistics(note.getText());
     }
 

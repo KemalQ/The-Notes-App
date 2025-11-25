@@ -10,8 +10,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -26,29 +29,48 @@ public class NotesController {
     }
 
     @PostMapping
-    public void createNote(@Valid @RequestBody Note note){// creating note
-        noteService.createNote(note);
-        log.info("Note successfully created!");
+    public ResponseEntity createNote(@Valid @RequestBody Note note){// creating note
+        log.info("Getting request for creating the note");
+
+        // Step 1. Saving entity in DB and Create entity variable
+        Note savedNote = noteService.createNote(note);
+
+        // Step 2. Creating DTO object to return in
+        NoteSummaryDto noteDetailsDTO = new NoteSummaryDto(
+                savedNote.getTitle(),
+                savedNote.getCreatedDate());
+
+        // Step 3. Creating URI location for saved entity (NOT DTO!)
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(savedNote.getId())
+                .toUri();
+
+        // Step 4. Returning status code and DTO in body, setting HTTP Header location
+        // (ResponseEntity: HTTP Status Code, request body, HTTP Header)
+        return ResponseEntity.created(location).body(noteDetailsDTO);
     }
 
     @GetMapping("/fullinfo")
-    public List<Note> getAllNotesInfo(){//  For tests only
+    public List<NoteSummaryDto> getAllNotesInfo(){//  For tests only
         return noteService.getAllNotes();
     }
 
     @GetMapping
-    public List<NoteSummaryDto> getAllNotes() {// getting All notes(title and date only)
+    public ResponseEntity<List<NoteSummaryDto>> getAllNotes() {// getting All notes(title and date only)
         log.info("Getting (fetching) all notes (title + date only)");
-        return noteService.getAllNotes().stream()
-                .map(note -> new NoteSummaryDto(note.getTitle(), note.getCreatedDate()))
-                .toList();
+        List<NoteSummaryDto> noteSummaryDto = noteService.getAllNotes();
+        return ResponseEntity.ok(noteSummaryDto);
     }
 
     @GetMapping("/{id}/details")
-    public NoteDetailsDto getNoteDetails(@PathVariable String id) {//   Note details contain only text and tags(optionally)
+    public ResponseEntity<NoteDetailsDto> getNoteDetails(@PathVariable String id) {//   Note details contain only text and tags(optionally)
         log.info("Fetching note details for id: {}", id);
-        Note note = noteService.getNoteById(id);
-        return new NoteDetailsDto(note.getText(), note.getTags());
+        return noteService.getNoteDetailsDTOById(id)
+                .<ResponseEntity<NoteDetailsDto>>
+                        map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/{id}/stats")
