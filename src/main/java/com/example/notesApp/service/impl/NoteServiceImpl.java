@@ -2,8 +2,9 @@ package com.example.notesApp.service.impl;
 
 import com.example.notesApp.dao.NotesDAO;
 import com.example.notesApp.dto.NoteDetailsDto;
-import com.example.notesApp.dto.NoteSummaryDto;
+import com.example.notesApp.dto.NoteDto;
 import com.example.notesApp.enums.Tags;
+import com.example.notesApp.mapper.NoteMapper;
 import com.example.notesApp.model.Note;
 import com.example.notesApp.service.NoteService;
 import lombok.extern.slf4j.Slf4j;
@@ -18,18 +19,21 @@ import java.util.*;
 public class NoteServiceImpl implements NoteService {
     private final NotesDAO notesDAO;
     private final NoteStatisticService noteStatistic;
+    private final NoteMapper noteMapper;
 
-    public NoteServiceImpl(NotesDAO notesDAO, NoteStatisticService noteStatistic){
+    public NoteServiceImpl(NotesDAO notesDAO, NoteStatisticService noteStatistic, NoteMapper noteMapper){
         this.notesDAO = notesDAO;
         this.noteStatistic = noteStatistic;
+        this.noteMapper = noteMapper;
     }
 
+
     public Note createNote(Note note){
-        note.setCreatedDate(new Date());// Setting current time
-        Note savedNote = notesDAO.save(note);
+        note.setCreatedDate(new Date());
         log.info("Note successfully saved");
-        return savedNote;
+        return notesDAO.save(note);
     }
+
 
     public void updateNote(String id, Note note){
         Note existing = notesDAO.findById(id)
@@ -42,38 +46,40 @@ public class NoteServiceImpl implements NoteService {
     }
 
     public void deleteNoteById(String id){
+        if (notesDAO.existsById(id) == false){
+            throw new NoSuchElementException("Note not found with id " + id);
+        }
         notesDAO.deleteById(id);
         log.info("Note in id = {} deleted", id);
     }
 
-    public List<NoteSummaryDto> getAllNotes(){
+    public List<NoteDto> getAllNotes(){
         return notesDAO.findAll().stream()
-                .map(note -> new NoteSummaryDto(note.getTitle(), note.getCreatedDate())).toList();
+                .map(noteMapper::toNoteDto).toList();
+    }
+
+    public List<NoteDto> getAllNotesSorted() {
+        return notesDAO.findAll(Sort.by(Sort.Direction.DESC, "createdDate")).stream()
+                .map(noteMapper::toNoteDto).toList();
+    }
+
+    public List<NoteDto> getNotesByTag(Tags tag) {
+        return notesDAO.findByTags(tag).stream().map(noteMapper::toNoteDto).toList();
+    }
+
+    public List<NoteDto> getNotesPage(Pageable pageable) {
+        return notesDAO.findAll(pageable).getContent().stream()
+                .map(noteMapper::toNoteDto).toList();
     }
 
     public Optional<NoteDetailsDto> getNoteDetailsDTOById(String id){
-        return notesDAO.findById(id).map(
-                note -> new NoteDetailsDto(
-                        note.getText(),
-                        note.getTags())
-        );
+        return notesDAO.findById(id).map(noteMapper::toNoteDetailsDto);
     }
 
     public Map<String, Long> getWordStats(String id){
-        Note note = notesDAO.findById(id).orElseThrow();// TODO check
+        Note note = notesDAO.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Note not found with id: " + id));// TODO check
         return noteStatistic.calculateWordStatistics(note.getText());
-    }
-
-    public List<Note> getAllNotesSorted() {
-        return notesDAO.findAll(Sort.by(Sort.Direction.DESC, "createdDate"));
-    }
-
-    public List<Note> getNotesByTag(Tags tag) {
-        return notesDAO.findByTags(tag);
-    }
-
-    public List<Note> getNotesPage(Pageable pageable) {
-        return notesDAO.findAll(pageable).getContent();
     }
 
 }

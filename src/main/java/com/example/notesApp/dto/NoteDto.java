@@ -6,7 +6,7 @@ import java.util.Date;
 
 @AllArgsConstructor
 @Getter
-public class NoteSummaryDto {
+public class NoteDto {
     private String title;
     private Date createdDate;
 }

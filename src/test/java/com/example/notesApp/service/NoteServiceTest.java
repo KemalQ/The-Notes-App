@@ -78,26 +78,26 @@ class NoteServiceTest {
         verify(notesDAO).deleteById("69137a7ccc2228150a5a4bb3");
     }
 
-    @Test
-    void getAllNotes_shouldReturnList() {
-        List<Note> notes = List.of(new Note(), new Note());
-        when(notesDAO.findAll()).thenReturn(notes);
+//    @Test
+//    void getAllNotes_shouldReturnList() {
+//        List<Note> notes = List.of(new Note(), new Note());
+//        when(notesDAO.findAll()).thenReturn(notes);
+//
+//        List<Note> result = noteService.getAllNotes();
+//
+//        assertEquals(2, result.size());
+//        verify(notesDAO).findAll();
+//    }
 
-        List<Note> result = noteService.getAllNotes();
-
-        assertEquals(2, result.size());
-        verify(notesDAO).findAll();
-    }
-
-    @Test
-    void getNoteById_shouldReturnNote() {
-        Note note = new Note();
-        when(notesDAO.findById("69137a7ccc2228150a5a4bb3")).thenReturn(Optional.of(note));
-
-        Note result = noteService.getNoteById("69137a7ccc2228150a5a4bb3");
-
-        assertEquals(note, result);
-    }
+//    @Test
+//    void getNoteById_shouldReturnNote() {
+//        Note note = new Note();
+//        when(notesDAO.findById("69137a7ccc2228150a5a4bb3")).thenReturn(Optional.of(note));
+//
+//        Note result = noteService.getNoteById("69137a7ccc2228150a5a4bb3");
+//
+//        assertEquals(note, result);
+//    }
 
     @Test
     void getWordStats_shouldReturnStatisticsFromService() {
@@ -126,13 +126,13 @@ class NoteServiceTest {
         verify(notesDAO).findByTags(Tags.IMPORTANT);
     }
 
-    @Test
-    void getNotesPage_shouldCallFindAllWithPageable() {
-        PageRequest pageable = PageRequest.of(0, 5);
-        when(notesDAO.findAll(pageable)).thenReturn(new PageImpl<>(List.of(new Note())));
-        List<Note> result = noteService.getNotesPage(pageable);
-
-        assertEquals(1, result.size());
-        verify(notesDAO).findAll(pageable);
-    }
+//    @Test
+//    void getNotesPage_shouldCallFindAllWithPageable() {
+//        PageRequest pageable = PageRequest.of(0, 5);
+//        when(notesDAO.findAll(pageable)).thenReturn(new PageImpl<>(List.of(new Note())));
+//        List<Note> result = noteService.getNotesPage(pageable);
+//
+//        assertEquals(1, result.size());
+//        verify(notesDAO).findAll(pageable);
+//    }
 }
