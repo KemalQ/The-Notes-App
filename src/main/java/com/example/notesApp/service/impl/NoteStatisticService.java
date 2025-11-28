@@ -1,4 +1,4 @@
-package com.example.notesApp.service;
+package com.example.notesApp.service.impl;
 
 import org.springframework.stereotype.Service;
 import java.util.*;

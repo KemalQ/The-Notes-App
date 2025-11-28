@@ -4,7 +4,7 @@ import com.example.notesApp.dto.NoteDetailsDto;
 import com.example.notesApp.dto.NoteSummaryDto;
 import com.example.notesApp.enums.Tags;
 import com.example.notesApp.model.Note;
-import com.example.notesApp.service.NoteService;
+import com.example.notesApp.service.impl.NoteServiceImpl;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -22,9 +22,9 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/notes")
 public class NotesController {
-    private final NoteService noteService;
+    private final NoteServiceImpl noteService;
 
-    public NotesController(NoteService noteService) {
+    public NotesController(NoteServiceImpl noteService) {
         this.noteService = noteService;
     }
 

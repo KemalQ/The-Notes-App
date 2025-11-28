@@ -3,6 +3,8 @@ package com.example.notesApp.service;
 import com.example.notesApp.dao.NotesDAO;
 import com.example.notesApp.enums.Tags;
 import com.example.notesApp.model.Note;
+import com.example.notesApp.service.impl.NoteServiceImpl;
+import com.example.notesApp.service.impl.NoteStatisticService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -24,7 +26,7 @@ class NoteServiceTest {
     private NoteStatisticService noteStatistic;
 
     @InjectMocks
-    private NoteService noteService;
+    private NoteServiceImpl noteService;
 
     @BeforeEach
     void setUp() {
