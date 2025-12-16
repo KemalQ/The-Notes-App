@@ -33,9 +33,7 @@ public class NotesController {
     }
 
     @PostMapping
-    public ResponseEntity<NoteDto> createNote(@Valid @RequestBody Note note){// creating note
-        log.info("Getting request for creating the note");
-
+    public ResponseEntity<NoteDto> createNote(@Valid @RequestBody Note note){
         // Step 1. Saving entity in DB and Create entity variable
         Note savedNote = noteService.createNote(note);
 
