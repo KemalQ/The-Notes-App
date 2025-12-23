@@ -13,7 +13,8 @@ public class NoteStatisticService {
 
         Map<String, Long> wordCount = new HashMap<>();
 
-        String[] words = text.split("\\s+");
+        String[] words = text.toLowerCase().replaceAll("[^a-zA-Z\\s]", "").split("\\s+");
+
         for (String word : words){
             if (!word.isEmpty()){ // eсли слово есть счетчик по умолчанию =1, далее на каждом совпадении +1
                 wordCount.put(word, wordCount.getOrDefault(word, 0L) + 1);
@@ -30,6 +31,5 @@ public class NoteStatisticService {
         }
 
         return sortedMap;
-
     }
 }

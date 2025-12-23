@@ -1,9 +1,12 @@
 package com.example.notesApp.service.impl;
 
 import com.example.notesApp.dao.NotesDAO;
+import com.example.notesApp.dto.CreateNoteDto;
 import com.example.notesApp.dto.NoteDetailsDto;
 import com.example.notesApp.dto.NoteDto;
+import com.example.notesApp.dto.PutNoteDto;
 import com.example.notesApp.enums.Tags;
+import com.example.notesApp.exceptions.NoteNotFoundException;
 import com.example.notesApp.mapper.NoteMapper;
 import com.example.notesApp.model.Note;
 import com.example.notesApp.service.NoteService;
@@ -12,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Slf4j
@@ -27,59 +31,69 @@ public class NoteServiceImpl implements NoteService {
         this.noteMapper = noteMapper;
     }
 
-
-    public Note createNote(Note note){
-        note.setCreatedDate(new Date());
+    @Override
+    public NoteDto createNote(CreateNoteDto noteDto){
+        Note note = noteMapper.toNote(noteDto);
+        NoteDto savedNote = noteMapper.toNoteDto(notesDAO.save(note));
         log.info("Note successfully saved");
-        return notesDAO.save(note);
+        return savedNote;
     }
 
-
-    public void updateNote(String id, Note note){
+    @Override
+    public void updateNote(String id, PutNoteDto putNoteDto){
         Note existing = notesDAO.findById(id)
-                        .orElseThrow(()-> new NoSuchElementException("Note not found with id: " + id));
-        existing.setTitle(note.getTitle());
-        existing.setText(note.getText());
-        existing.setTags(note.getTags());
+                        .orElseThrow(()-> new NoteNotFoundException("Note not found with id: " + id));
+        noteMapper.updateNoteFromDto(putNoteDto, existing);
         notesDAO.save(existing);
         log.info("{} id note updated", id);
     }
 
+    @Override
     public void deleteNoteById(String id){
-        if (notesDAO.existsById(id) == false){
-            throw new NoSuchElementException("Note not found with id " + id);
+        if (!notesDAO.existsById(id)){
+            throw new NoteNotFoundException("Note not found with id " + id);
         }
         notesDAO.deleteById(id);
         log.info("Note in id = {} deleted", id);
     }
 
+    @Override
     public List<NoteDto> getAllNotes(){
         return notesDAO.findAll().stream()
                 .map(noteMapper::toNoteDto).toList();
     }
 
+    @Override
     public List<NoteDto> getAllNotesSorted() {
         return notesDAO.findAll(Sort.by(Sort.Direction.DESC, "createdDate")).stream()
                 .map(noteMapper::toNoteDto).toList();
     }
 
+    @Override
     public List<NoteDto> getNotesByTag(Tags tag) {
         return notesDAO.findByTags(tag).stream().map(noteMapper::toNoteDto).toList();
     }
 
+    @Override
     public List<NoteDto> getNotesPage(Pageable pageable) {
         return notesDAO.findAll(pageable).getContent().stream()
                 .map(noteMapper::toNoteDto).toList();
     }
 
-    public Optional<NoteDetailsDto> getNoteDetailsDTOById(String id){
-        return notesDAO.findById(id).map(noteMapper::toNoteDetailsDto);
+    @Override
+    public NoteDetailsDto getNoteDetailsDTOById(String id){
+        return notesDAO.findById(id).map(noteMapper::toNoteDetailsDto)
+                .orElseThrow(()-> new NoteNotFoundException("Note not found with id: " + id));
     }
 
+    @Override
     public Map<String, Long> getWordStats(String id){
         Note note = notesDAO.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Note not found with id: " + id));// TODO check
+                .orElseThrow(() -> new NoteNotFoundException("Note not found with id: " + id));// TODO check
         return noteStatistic.calculateWordStatistics(note.getText());
     }
-
 }
+
+// TODO остановился на строке 36 fix issue with LocalDateTime
+// Потом нужно добавить класс Exception и настроить его работу
+// Далее по Claude
