@@ -8,5 +8,6 @@ import java.time.LocalDateTime;
 public class ErrorObject {
     private Integer statusCode;
     private String message;
+    private String path;
     private LocalDateTime errorTime;
 }

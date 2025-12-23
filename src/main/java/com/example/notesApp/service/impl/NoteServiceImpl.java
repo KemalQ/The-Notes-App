@@ -89,11 +89,7 @@ public class NoteServiceImpl implements NoteService {
     @Override
     public Map<String, Long> getWordStats(String id){
         Note note = notesDAO.findById(id)
-                .orElseThrow(() -> new NoteNotFoundException("Note not found with id: " + id));// TODO check
+                .orElseThrow(() -> new NoteNotFoundException("Note not found with id: " + id));
         return noteStatistic.calculateWordStatistics(note.getText());
     }
 }
-
-// TODO остановился на строке 36 fix issue with LocalDateTime
-// Потом нужно добавить класс Exception и настроить его работу
-// Далее по Claude

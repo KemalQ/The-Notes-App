@@ -5,7 +5,6 @@ import com.example.notesApp.dto.NoteDetailsDto;
 import com.example.notesApp.dto.NoteDto;
 import com.example.notesApp.dto.PutNoteDto;
 import com.example.notesApp.enums.Tags;
-import com.example.notesApp.exceptions.NoteNotFoundException;
 import com.example.notesApp.mapper.NoteMapper;
 import com.example.notesApp.service.NoteService;
 import jakarta.validation.Valid;
@@ -38,8 +37,8 @@ public class NotesController {
     public ResponseEntity<NoteDto> createNote(@Valid @RequestBody CreateNoteDto note){
         NoteDto savedNote = noteService.createNote(note);
 
-        URI location = ServletUriComponentsBuilder//TODO добавить возвращение с id созданного ресурса
-                .fromCurrentRequest().path("/id").buildAndExpand(savedNote.getTitle()).toUri();
+//        URI location = ServletUriComponentsBuilder//TODO добавить возвращение с id созданного ресурса
+//                .fromCurrentRequest().path("/id").buildAndExpand(savedNote.getTitle()).toUri();
         return new ResponseEntity<>(savedNote, HttpStatus.CREATED);
     }
 
