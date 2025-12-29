@@ -11,11 +11,9 @@ import com.example.notesApp.mapper.NoteMapper;
 import com.example.notesApp.model.Note;
 import com.example.notesApp.service.NoteService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Slf4j
@@ -58,26 +56,10 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public List<NoteDto> getAllNotes(){
-        return notesDAO.findAll().stream()
-                .map(noteMapper::toNoteDto).toList();
-    }
+    public List<NoteDto> getNotes(Tags tags, Pageable pageable){
+        return notesDAO.findAllFiltered(tags, pageable).map(noteMapper::toNoteDto)
+                .getContent();
 
-    @Override
-    public List<NoteDto> getAllNotesSorted() {
-        return notesDAO.findAll(Sort.by(Sort.Direction.DESC, "createdDate")).stream()
-                .map(noteMapper::toNoteDto).toList();
-    }
-
-    @Override
-    public List<NoteDto> getNotesByTag(Tags tag) {
-        return notesDAO.findByTags(tag).stream().map(noteMapper::toNoteDto).toList();
-    }
-
-    @Override
-    public List<NoteDto> getNotesPage(Pageable pageable) {
-        return notesDAO.findAll(pageable).getContent().stream()
-                .map(noteMapper::toNoteDto).toList();
     }
 
     @Override

@@ -43,10 +43,13 @@ public class NotesController {
     }
 
     @GetMapping
-    public ResponseEntity<List<NoteDto>> getAllNotes() {
-        log.info("Getting all notes");
-        List<NoteDto> noteSummaryDto = noteService.getAllNotes();
-        return ResponseEntity.ok(noteSummaryDto);
+    public ResponseEntity<List<NoteDto>> getAllNotes(
+            @RequestParam(required = false) Tags tag, Pageable pageable) {
+
+        log.info("Getting notes page: {}, size: {}", pageable.getPageNumber(), pageable.getPageSize());
+
+        return ResponseEntity.ok(noteService.getNotes(tag, pageable));
+
     }
 
     @GetMapping("/{id}")
@@ -59,26 +62,6 @@ public class NotesController {
     public ResponseEntity<Map<String, Long>> noteStats(@PathVariable String id){
         log.info("Note stats retrieved for id: {}", id);
         return ResponseEntity.ok(noteService.getWordStats(id));
-    }
-
-    @GetMapping("/filter")
-    public ResponseEntity<List<NoteDto>> getNotesByTag(@RequestParam Tags tag) {
-        log.info("Filtering notes by tag: {}", tag);
-        return ResponseEntity.ok(noteService.getNotesByTag(tag));
-    }
-
-    @GetMapping("/sorted")
-    public ResponseEntity<List<NoteDto>> getAllNotesSorted() {
-        log.info("Getting all notes sorted by createdDate (DESC)");
-        return ResponseEntity.ok(noteService.getAllNotesSorted());
-    }
-
-    @GetMapping("/page")
-    public ResponseEntity<List<NoteDto>> getNotesPage(@RequestParam(defaultValue = "0") int page,
-                                                      @RequestParam(defaultValue = "5") int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
-        log.info("Getting notes page: {}, size: {}", page, size);
-        return ResponseEntity.ok(noteService.getNotesPage(pageable));
     }
 
     @PutMapping("/{id}")
