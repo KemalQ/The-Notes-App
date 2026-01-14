@@ -70,15 +70,11 @@ docker-compose down
 
 Basic CRUD and additional endpoints for notes:
 
-| Method | URL                     | Description                                                |
-| ------ | ----------------------- | ---------------------------------------------------------- |
-| POST   | /api/notes              | Create a new note                                          |
-| GET    | /api/notes              | Get all notes (title + created date only)                 |
-| GET    | /api/notes/fullinfo     | Get all notes with full info (for tests only)             |
-| GET    | /api/notes/{id}/details | Get note details by id (text + tags)                      |
-| GET    | /api/notes/{id}/stats   | Get statistics for a note by id (word count, etc.)        |
-| GET    | /api/notes/filter?tag=  | Get notes filtered by a tag                                |
-| GET    | /api/notes/sorted       | Get all notes sorted by creation date (DESC)              |
-| GET    | /api/notes/page?page=&size= | Get paginated notes, default page=0, size=5           |
-| PUT    | /api/notes/{id}         | Update a note by id                                        |
-| DELETE | /api/notes/{id}         | Delete a note by id                                        |
+| Method | URL                   | Description                                                |
+| ------ |-----------------------| ---------------------------------------------------------- |
+| POST   | /api/notes            | Create a new note                                          |
+| GET    | /api/notes            | Get all notes (title + created date only)                 |
+| GET    | /api/notes/{id}       | Get note details by id (text + tags)                      |
+| GET    | /api/notes/{id}/stats | Get statistics for a note by id (word count, etc.)        |
+| PUT    | /api/notes/{id}       | Update a note by id                                        |
+| DELETE | /api/notes/{id}       | Delete a note by id                                        |

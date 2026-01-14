@@ -9,15 +9,11 @@ import com.example.notesApp.mapper.NoteMapper;
 import com.example.notesApp.service.NoteService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +45,6 @@ public class NotesController {
         log.info("Getting notes page: {}, size: {}", pageable.getPageNumber(), pageable.getPageSize());
 
         return ResponseEntity.ok(noteService.getNotes(tag, pageable));
-
     }
 
     @GetMapping("/{id}")

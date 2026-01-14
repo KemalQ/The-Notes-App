@@ -19,5 +19,4 @@ public interface NoteService {
     Map<String, Long> getWordStats(String id);
 
     List<NoteDto> getNotes(Tags tags, Pageable pageable);
-
 }
