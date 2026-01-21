@@ -7,6 +7,7 @@ import com.example.notesApp.dto.NoteDto;
 import com.example.notesApp.dto.PutNoteDto;
 import com.example.notesApp.exceptions.NoteNotFoundException;
 import com.example.notesApp.mapper.NoteMapper;
+import com.example.notesApp.mapper.NoteMapperTest;
 import com.example.notesApp.model.Note;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
