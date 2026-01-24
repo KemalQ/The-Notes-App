@@ -1,10 +1,7 @@
 package com.example.notesApp.service.impl;
 
 import com.example.notesApp.dao.NotesDAO;
-import com.example.notesApp.dto.CreateNoteDto;
-import com.example.notesApp.dto.NoteDetailsDto;
-import com.example.notesApp.dto.NoteDto;
-import com.example.notesApp.dto.PutNoteDto;
+import com.example.notesApp.dto.*;
 import com.example.notesApp.enums.Tags;
 import com.example.notesApp.exceptions.NoteNotFoundException;
 import com.example.notesApp.mapper.NoteMapper;
@@ -30,9 +27,9 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public NoteDto createNote(CreateNoteDto noteDto){
+    public CreateNoteResponseDto createNote(CreateNoteDto noteDto){
         Note note = noteMapper.toNote(noteDto);
-        NoteDto savedNote = noteMapper.toNoteDto(notesDAO.save(note));
+        CreateNoteResponseDto savedNote = noteMapper.toCreatedNoteDto(notesDAO.save(note));
         log.info("Note successfully saved");
         return savedNote;
     }

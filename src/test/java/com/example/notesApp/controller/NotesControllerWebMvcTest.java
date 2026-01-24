@@ -1,13 +1,9 @@
 package com.example.notesApp.controller;
 
-import com.example.notesApp.dto.CreateNoteDto;
-import com.example.notesApp.dto.NoteDetailsDto;
-import com.example.notesApp.dto.NoteDto;
-import com.example.notesApp.dto.PutNoteDto;
+import com.example.notesApp.dto.*;
 import com.example.notesApp.enums.Tags;
 import com.example.notesApp.exceptions.GlobalExceptionHandler;
 import com.example.notesApp.exceptions.NoteNotFoundException;
-import com.example.notesApp.mapper.NoteMapper;
 import com.example.notesApp.service.NoteService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -43,34 +39,34 @@ class NotesControllerWebMvcTest {
     @MockitoBean NoteService noteService;
 
     @Test
-    void createNote_shouldReturn201_andBody() throws Exception {
-        // given
-        CreateNoteDto dto = new CreateNoteDto();
-        dto.setTitle("Title");
-        dto.setText("Text");
-        dto.setTags(List.of(Tags.BUSINESS));
+    void createNote_shouldReturn201_LocationHeader_andBody() throws Exception {
+        CreateNoteDto request = new CreateNoteDto();
+        request.setTitle("Title");
+        request.setText("Text");
+        request.setTags(List.of(Tags.BUSINESS));
 
-        NoteDto response = new NoteDto("Title", LocalDateTime.of(2026, 1, 21, 12, 0));
+        CreateNoteResponseDto response = new CreateNoteResponseDto();
+        response.setId("69742fc38386874d1ad74118");
+        response.setTitle("Title");
+        response.setCreatedDate(LocalDateTime.of(2026, 1, 24, 5, 34, 43));
+
         when(noteService.createNote(any(CreateNoteDto.class))).thenReturn(response);
 
-        // when + then
         mockMvc.perform(post("/api/notes")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(dto)))
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
+                .andExpect(header().string("Location",
+                        org.hamcrest.Matchers.endsWith("/api/notes/69742fc38386874d1ad74118")))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value("69742fc38386874d1ad74118"))
                 .andExpect(jsonPath("$.title").value("Title"))
                 .andExpect(jsonPath("$.createdDate").exists());
 
-        // verify: вызов сервиса и полезная проверка входных данных
-        ArgumentCaptor<CreateNoteDto> captor = ArgumentCaptor.forClass(CreateNoteDto.class);
-        verify(noteService, times(1)).createNote(captor.capture());
-        assertThat(captor.getValue().getTitle()).isEqualTo("Title");
-        assertThat(captor.getValue().getText()).isEqualTo("Text");
-        assertThat(captor.getValue().getTags()).containsExactly(Tags.BUSINESS);
-
+        verify(noteService, times(1)).createNote(any(CreateNoteDto.class));
         verifyNoMoreInteractions(noteService);
     }
+
 
     @Test
     void createNote_shouldReturn400_whenValidationFails() throws Exception {

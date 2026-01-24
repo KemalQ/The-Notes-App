@@ -1,13 +1,9 @@
 package com.example.notesApp.service.impl;
 
 import com.example.notesApp.dao.NotesDAO;
-import com.example.notesApp.dto.CreateNoteDto;
-import com.example.notesApp.dto.NoteDetailsDto;
-import com.example.notesApp.dto.NoteDto;
-import com.example.notesApp.dto.PutNoteDto;
+import com.example.notesApp.dto.*;
 import com.example.notesApp.exceptions.NoteNotFoundException;
 import com.example.notesApp.mapper.NoteMapper;
-import com.example.notesApp.mapper.NoteMapperTest;
 import com.example.notesApp.model.Note;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -35,45 +32,38 @@ public class NoteServiceImplTest {
     private NoteServiceImpl noteService;
 
     @Test
-    void createNote_shouldSaveNoteAndReturnNoteDto() {
+    void createNote_shouldMapSaveAndReturnResponseDto() {
+        // given
         CreateNoteDto createDto = new CreateNoteDto();
         createDto.setTitle("Test");
         createDto.setText("Some text");
 
         Note noteEntity = new Note();
-        NoteDto noteDto = new NoteDto("Test", null);
+
+        Note savedEntity = new Note();
+
+        CreateNoteResponseDto responseDto = new CreateNoteResponseDto();
+        responseDto.setId("69742fc38386874d1ad74118");
+        responseDto.setTitle("Test");
+        responseDto.setCreatedDate(LocalDateTime.now());
 
         when(noteMapper.toNote(createDto)).thenReturn(noteEntity);
-        when(notesDAO.save(noteEntity)).thenReturn(noteEntity);
-        when(noteMapper.toNoteDto(noteEntity)).thenReturn(noteDto);
+        when(notesDAO.save(noteEntity)).thenReturn(savedEntity);
+        when(noteMapper.toCreatedNoteDto(savedEntity)).thenReturn(responseDto);
 
-        NoteDto result = noteService.createNote(createDto);
+        // when
+        CreateNoteResponseDto result = noteService.createNote(createDto);
 
-        assertNotNull(result);
-    }
-
-    @Test
-    void createNote_shouldMapSaveAndReturnDto() {
-        CreateNoteDto createDto = new CreateNoteDto();
-        createDto.setTitle("Test");
-        createDto.setText("Some text");
-
-        Note noteEntity = new Note();
-        NoteDto noteDto = new NoteDto("Test", null);
-
-        when(noteMapper.toNote(createDto)).thenReturn(noteEntity);
-        when(notesDAO.save(noteEntity)).thenReturn(noteEntity);
-        when(noteMapper.toNoteDto(noteEntity)).thenReturn(noteDto);
-
-        NoteDto result = noteService.createNote(createDto);
-
+        // then
         assertNotNull(result);
         assertEquals("Test", result.getTitle());
+        assertEquals("69742fc38386874d1ad74118", result.getId());
 
-        verify(noteMapper, times(1)).toNote(createDto);
-        verify(notesDAO, times(1)).save(noteEntity);
-        verify(noteMapper, times(1)).toNoteDto(noteEntity);
+        verify(noteMapper).toNote(createDto);
+        verify(notesDAO).save(noteEntity);
+        verify(noteMapper).toCreatedNoteDto(savedEntity);
         verifyNoMoreInteractions(notesDAO, noteMapper);
+        verifyNoInteractions(noteStatisticService);
     }
 
     @Test
