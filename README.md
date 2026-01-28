@@ -11,6 +11,7 @@ A simple Notes application built with Java Spring Boot and MongoDB, fully contai
 - [Requirements](#requirements)
 - [Running with Docker Compose](#running-with-docker-compose)
 - [API](#api)
+- [Testing](#testing)
 
 
 ---
@@ -78,3 +79,37 @@ Basic CRUD and additional endpoints for notes:
 | GET    | /api/notes/{id}/stats | Get statistics for a note by id (word count, etc.)        |
 | PUT    | /api/notes/{id}       | Update a note by id                                        |
 | DELETE | /api/notes/{id}       | Delete a note by id                                        |
+
+### POST /api/notes
+
+Creates a new note.
+
+- Returns **201 Created**
+- Sets **Location** header with URL of created resource
+- Returns response body with note id and metadata
+
+Example Location header:
+- http://localhost:8080/api/notes/{id}
+```json
+  {
+    "id": "69742fc38386874d1ad74118",
+    "title": "Talents in the Team",
+    "createdDate": "2026-01-24T05:34:43.5149553"
+  }
+```
+
+
+
+## 🧪 Testing
+
+The project includes:
+
+- Unit tests for services, mappers, and business logic
+- Web layer tests using `@WebMvcTest` and `MockMvc`
+- Validation and error handling tests
+
+Tests focus on:
+- REST API contract
+- HTTP status codes
+- Location header for created resources
+- Proper exception handling
